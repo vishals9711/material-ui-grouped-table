@@ -66,72 +66,77 @@ export const getArrayDepth = (arr: any): number => {
 };
 
 /**
- * This function takes in an array of grouped columns and returns a grouped table head and an array of columns
- * @param columns - an array of grouped columns
- * @returns - an object with a grouped table head and an array of columns
+ * Given a grouped column, return an array of its lowermost labels (i.e., columns with no children).
+ *
+ * @param element - The grouped column to find the lowermost labels for.
+ * @returns An array of lowermost labels.
+ */
+export const getLowermostLabels = (element: GroupedColumn): GroupedColumn[] => {
+  if (element && !element.children) {
+    // If the element has no children, return it as an array of one element.
+    return [element];
+  } else if (element?.children) {
+    // If the element has children, recursively find lowermost labels for each child.
+    const lowermost: GroupedColumn[] = [];
+    for (const child of element.children) {
+      const lowermostChild = getLowermostLabels(child);
+      lowermost.push(...lowermostChild);
+    }
+    return lowermost;
+  }
+  // If the element is null or undefined or has no children, return an empty array.
+  return [];
+};
+
+/**
+ * Returns an array of table head groups and an array of lowermost labels from a given array of grouped columns.
+ *
+ * @param columns An array of GroupedColumn objects, where each object represents a column and may have children
+ * @returns An object containing two arrays:
+ * - tableHeadArray: A 2D array of GroupedTableHead objects, where each object represents a group of columns in a row of the table head
+ * - columnArray: An array of lowermost labels (Column objects) that represent the columns in the table body
  */
 export const getGroupedTableHeadAndColumnArray = (columns: GroupedColumn[]): { tableHeadArray: GroupedTableHead; columnArray: Column[] } => {
-  // Create an array to store the columns
   const columnArray: Column[] = [];
-
-  // Get the maximum depth of the array
   const maxDepth = getArrayDepth(columns);
-
-  // Create a queue to store the grouped columns
-  const queue: any[] = columns;
-
-  // Create an array to store the grouped table head
-  const tableHeadArray: GroupedTableHead = [];
-
-  // Initialize the current depth to 0
+  const queue: any[] = [...columns];
+  const newArray: GroupedTableHead = [];
+  const seenId = new Set<string>(); // Tracks the IDs of columns that have already been added to the columnArray
   let currentDepth = 0;
-
-  // Loop through the queue until it is empty
   while (queue.length) {
-    // Store the length of the queue for iteration
     const qLength = queue.length;
-
-    // Create an array to store the current set of grouped columns
     const currentArray = [];
-
-    // Loop through the queue
     for (let index = 0; index < qLength; index++) {
-      // Get the next element in the queue
       const element = queue.shift();
-
-      // If the element has children
       if (element && element?.children) {
-        // Destructure the children property
         const { children, ...rest } = element;
-
-        // Push the updated element to the current array
         currentArray.push({
           ...rest,
           hasChildren: true,
           rowSpan: maxDepth - currentDepth,
           colSpan: getLeafNodeCount([element]),
         });
-
-        // Push the children to the queue
         queue.push(...children);
-      }
-      // If the element does not have children
-      else if (element) {
-        // Push the element to the current array
+        if (!seenId.has(element.id)) {
+          const lowermost = getLowermostLabels(element);
+          lowermost.forEach((lower) => {
+            const newLower = lower as Column;
+            if (!seenId.has(newLower.id)) {
+              columnArray.push(newLower);
+              seenId.add(newLower.id);
+            }
+          });
+        }
+      } else if (element) {
         currentArray.push({ ...element, rowSpan: maxDepth - currentDepth, hasChildren: false });
-
-        // Push the element to the column array
-        columnArray.push(element);
+        if (!seenId.has(element.id)) {
+          columnArray.push(element);
+          seenId.add(element.id);
+        }
       }
     }
-
-    // Increment the current depth
     currentDepth++;
-
-    // Push the current array to the grouped table head array
-    tableHeadArray.push(currentArray);
+    newArray.push(currentArray);
   }
-
-  // Return the grouped table head array and the column array
-  return { tableHeadArray, columnArray };
+  return { tableHeadArray: newArray, columnArray };
 };

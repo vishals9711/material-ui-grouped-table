@@ -89,9 +89,11 @@ const GroupedColumnTableComponent = (props: GroupedTableProps): React.ReactEleme
   };
 
   useEffect(() => {
-    const { tableHeadArray, columnArray } = getGroupedTableHeadAndColumnArray(columns);
-    setTableHeadArray([...tableHeadArray]);
-    setColumnArray([...columnArray]);
+    if (columns) {
+      const { tableHeadArray, columnArray } = getGroupedTableHeadAndColumnArray(columns);
+      setTableHeadArray([...tableHeadArray]);
+      setColumnArray([...columnArray]);
+    }
   }, [columns]);
 
   return (
@@ -105,7 +107,7 @@ const GroupedColumnTableComponent = (props: GroupedTableProps): React.ReactEleme
         }}
       >
         <TableHead sx={stickyHeader}>
-          {enableSort ? (
+          {enableSort || enableCheckBox ? (
             <EnhancedTableHead
               headCells={tableHeadArray}
               order={order}
@@ -118,6 +120,7 @@ const GroupedColumnTableComponent = (props: GroupedTableProps): React.ReactEleme
               onSelectAllClick={handleSelectAllClick}
               sxProps={sxProps}
               maxDepth={getArrayDepth(columns)}
+              enableSort={enableSort}
             />
           ) : (
             <>
@@ -177,9 +180,9 @@ const GroupedColumnTableComponent = (props: GroupedTableProps): React.ReactEleme
               })}
             </>
           )}
-          {enableFilters && (
+          {enableFilters && columnArray && (
             <ColumnFilterComponent
-              columns={columns}
+              columns={columnArray}
               sxProps={sxProps}
               enableBorders={enableBorders}
               filterChanges={filterChanges}
@@ -195,7 +198,14 @@ const GroupedColumnTableComponent = (props: GroupedTableProps): React.ReactEleme
                 return (
                   <TableRow hover key={index}>
                     {enableCheckBox && checkboxSelector && (
-                      <TableCell padding='checkbox' onClick={() => enableCheckBox && handleClick(row[checkboxSelector].toString())} key={`checkbox-${index}`}>
+                      <TableCell
+                        padding='checkbox'
+                        onClick={() => enableCheckBox && handleClick(row[checkboxSelector].toString())}
+                        key={`checkbox-${index}`}
+                        sx={{
+                          borderLeft: enableBorders ? '1px solid #DDDDDD' : '',
+                        }}
+                      >
                         <Checkbox
                           color='primary'
                           sx={{
@@ -245,9 +255,9 @@ const GroupedColumnTableComponent = (props: GroupedTableProps): React.ReactEleme
               {new Array(3).fill(0).map((_row, index) => {
                 return (
                   <TableRow hover key={index}>
-                    {columns.map((column) => {
+                    {[1, 2, 3, 4].map((_column, columnIndex) => {
                       return (
-                        <TableCell key={column.id} align={column.align} sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                        <TableCell key={`tablecell-${columnIndex}`} sx={{ borderBottom: '1px solid #e0e0e0' }}>
                           <Skeleton key={index} variant='rectangular' animation='wave' height={24} />
                         </TableCell>
                       );

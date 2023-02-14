@@ -47,10 +47,8 @@ export interface FlattenedColumn extends GroupedColumn {
 
 export interface GroupedTableProps {
   rows: Data[] | null | undefined;
-  columns: GroupedColumn[];
-  onClick?: (value: any) => void;
-  navigateTo?: (value: any) => string;
-  onClickColumn?: string;
+  columns: GroupedColumn[] | null | undefined;
+  onClick?: (value: Data) => void;
   enableSort?: boolean;
   enableBorders?: boolean;
   ellipsis?: boolean;

@@ -41,7 +41,7 @@ const ColumnFilterComponent = (props: IColumnFilterComponent) => {
           key={'checkbox'}
           sx={{
             color: 'rgba(0, 0, 0, 0.7)',
-            borderRight: enableBorders ? '1px solid #DDDDDD' : '',
+            borderLeft: enableBorders ? '1px solid #DDDDDD' : '',
             ...sxProps,
           }}
         ></TableCell>
@@ -54,7 +54,8 @@ const ColumnFilterComponent = (props: IColumnFilterComponent) => {
           sx={{
             minWidth: column.minWidth,
             color: 'rgba(0, 0, 0, 0.7)',
-            borderRight: enableBorders ? (columnIndex + 1 !== columns.length ? '1px solid #DDDDDD' : '') : '',
+            borderLeft: enableBorders && columnIndex === 0 ? '1px solid #DDDDDD' : '',
+            borderRight: enableBorders ? '1px solid #DDDDDD' : '',
             ...sxProps,
           }}
         >

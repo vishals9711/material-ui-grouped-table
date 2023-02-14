@@ -15,6 +15,7 @@ interface EnhancedTableProps {
   rowCount: number | undefined;
   sxProps?: SxProps;
   maxDepth?: number;
+  enableSort?: boolean;
 }
 
 const EnhancedTableHead = (props: EnhancedTableProps): React.ReactElement => {
@@ -30,6 +31,7 @@ const EnhancedTableHead = (props: EnhancedTableProps): React.ReactElement => {
     rowCount,
     sxProps = {},
     maxDepth = 0,
+    enableSort = false,
   } = props;
   const createSortHandler = (property: keyof Data) => {
     onRequestSort(property);
@@ -40,7 +42,7 @@ const EnhancedTableHead = (props: EnhancedTableProps): React.ReactElement => {
         return (
           <TableRow key={`table-head-${tableHeadIndex}`}>
             <>
-              {enableCheckbox && onSelectAllClick && typeof rowCount !== 'undefined' && typeof numSelected !== 'undefined' && tableHeadIndex === 0 && (
+              {enableCheckbox && typeof rowCount !== 'undefined' && typeof numSelected !== 'undefined' && tableHeadIndex === 0 && (
                 <TableCell
                   padding='checkbox'
                   scope={'col'}
@@ -48,7 +50,6 @@ const EnhancedTableHead = (props: EnhancedTableProps): React.ReactElement => {
                   key={`table-colspan-enhanced-checkbox`}
                   sx={{
                     color: 'rgba(0, 0, 0, 0.7)',
-                    borderRight: enableBorders ? '1px solid #DDDDDD' : '',
                     borderLeft: enableBorders && tableHeadIndex === 0 ? '1px solid #DDDDDD' : '',
                     borderTop: enableBorders && tableHeadIndex === 0 ? '1px solid #DDDDDD' : '',
                   }}
@@ -112,18 +113,22 @@ const EnhancedTableHead = (props: EnhancedTableProps): React.ReactElement => {
                         ...newSxProps,
                       }}
                     >
-                      <TableSortLabel
-                        active={orderBy === column.id}
-                        direction={orderBy === column.id ? order : 'asc'}
-                        onClick={() => column.id && createSortHandler(column.id)}
-                      >
-                        {column.label}
-                        {orderBy === column.id ? (
-                          <Box component='span' sx={visuallyHidden}>
-                            {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                          </Box>
-                        ) : null}
-                      </TableSortLabel>
+                      {enableSort ? (
+                        <TableSortLabel
+                          active={orderBy === column.id}
+                          direction={orderBy === column.id ? order : 'asc'}
+                          onClick={() => column.id && createSortHandler(column.id)}
+                        >
+                          {column.label}
+                          {orderBy === column.id ? (
+                            <Box component='span' sx={visuallyHidden}>
+                              {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                            </Box>
+                          ) : null}
+                        </TableSortLabel>
+                      ) : (
+                        column.label
+                      )}
                     </TableCell>
                   );
               })}
