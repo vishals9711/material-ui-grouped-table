@@ -1,0 +1,31 @@
+{
+  "name": "material-ui-grouped-table",
+  "version": "1.0.0",
+  "description": "Grouped Table Based on Material UI for ReactJS",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc && cp package.json README.md ./dist",
+    "publish":"npm publish ./dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vishals9711/material-ui-grouped-table.git"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "material-ui"
+  ],
+  "author": "vishals9711",
+  "license": "MIT",
+  "devDependencies": {
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
+    "@mui/material": "^5.9.1",
+    "@types/react": "^18.0.15",
+    "react": "^18.2.0",
+    "tslib": "^2.4.0",
+    "typescript": "^4.7.4"
+  }
+}
