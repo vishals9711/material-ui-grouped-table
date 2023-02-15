@@ -1,6 +1,6 @@
 {
   "name": "material-ui-grouped-table",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Grouped Table Based on Material UI for ReactJS",
   "main": "index.js",
   "scripts": {
